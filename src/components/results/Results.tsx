@@ -30,6 +30,7 @@ function Results() {
   useEffect(() => {
     searchNames(name);
   }, [name]);
+
   const clickName = (name: string) => {
     history.push(`/profile/${name}`);
   };

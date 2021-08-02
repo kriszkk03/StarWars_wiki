@@ -12,7 +12,10 @@ function Individuals() {
   const [title, setTitle] = useState('');
   const history = useHistory();
   const [loaded, setLoaded] = useState(false);
-
+  /**
+   * prepare a list of those people who have the same species
+   * @param id the id of the selected species
+   */
   const getPeopleURL = async (id: string) => {
     const data = await ApiInstance.get<Species>(`/species/${id}`);
     setTitle(data.data.name);

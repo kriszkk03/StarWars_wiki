@@ -15,25 +15,18 @@ import {
   ErrorMsg,
 } from './style';
 import * as ReactBootStrap from 'react-bootstrap';
+import { useSearch } from './useSearch';
 
 function HomePage() {
   const [inputValue, setInputValue] = useState('');
-  const bonus = 'people/?search=';
   const history = useHistory();
   const [species, setSpecies] = useState(['']);
   const [selectValue, setSelectValue] = useState('1');
   const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-
-  const handleSearch = async (bonus: string, value: string) => {
-    const data = await ApiInstance.get<SearchResult>(bonus + value);
-    value.trim() === '' || data.data.count === 0
-      ? setError(true)
-      : data.data.count === 1
-      ? history.push(`/profile/${value}`)
-      : history.push(`/results/${value}`);
-  };
-
+  const { handleSearch, error } = useSearch({ history });
+  /**
+   * initialize a dropdown list of all species in starwars
+   */
   const ListSpecies = useCallback(async (endpoint: string, resultArray: string[]) => {
     const data = await ApiInstance.get<SearchResult>(endpoint);
     //  van egy üres page4 amin nem tudok végigiterálni!!
@@ -65,9 +58,20 @@ function HomePage() {
   return (
     <Container>
       <Header>
-        <SearchInput type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
-        <SearchButton onClick={() => handleSearch(bonus, inputValue)}>Search</SearchButton>
-        {error ? <ErrorMsg>Sorry, No results! Try another term or use the Species list!</ErrorMsg> : <></>}
+        <SearchInput
+          data-testid="searchInput"
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <SearchButton data-testid="searchButton" onClick={() => handleSearch(inputValue)}>
+          Search
+        </SearchButton>
+        {error ? (
+          <ErrorMsg data-testid="errorMsg">Sorry, No results! Try another term or use the Species list!</ErrorMsg>
+        ) : (
+          <></>
+        )}
         <Title>StarWars Wiki</Title>
       </Header>
       <Content>
