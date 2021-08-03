@@ -1,6 +1,4 @@
-import { ApiInstance } from '../../api/api';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SearchResult } from '../../api/types/searchResult';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Container,
@@ -16,36 +14,14 @@ import {
 } from './style';
 import * as ReactBootStrap from 'react-bootstrap';
 import { useSearch } from './useSearch';
+import { useList } from './useList';
 
-function HomePage() {
+const HomePage = () => {
   const [inputValue, setInputValue] = useState('');
   const history = useHistory();
-  const [species, setSpecies] = useState(['']);
   const [selectValue, setSelectValue] = useState('1');
-  const [loaded, setLoaded] = useState(false);
   const { handleSearch, error } = useSearch({ history });
-  /**
-   * initialize a dropdown list of all species in starwars
-   */
-  const ListSpecies = useCallback(async (endpoint: string, resultArray: string[]) => {
-    const data = await ApiInstance.get<SearchResult>(endpoint);
-    //  van egy üres page4 amin nem tudok végigiterálni!!
-    if (data.data.results) {
-      data.data.results.forEach((species) => {
-        resultArray.push(species.name);
-      });
-    }
-    if (data.data.next !== undefined) {
-      ListSpecies(data.data.next, resultArray);
-    } else {
-      setSpecies(resultArray);
-      setLoaded(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    ListSpecies('/species/', []);
-  }, [ListSpecies]);
+  const { species, loaded } = useList();
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectValue(e.target.value);
@@ -72,26 +48,29 @@ function HomePage() {
         ) : (
           <></>
         )}
-        <Title>StarWars Wiki</Title>
+        <Title data-testid="componentTitle">StarWars Wiki</Title>
       </Header>
       <Content>
         {loaded ? (
           <>
             <h1>List of species:</h1>
             <ListOfSpecies
+              data-testid="listOfSpecies"
               id="list"
               value={selectValue}
               onChange={(e) => {
                 handleSelectChange(e);
               }}
             >
-              {species.map((value: string, key: number) => {
-                return (
-                  <option key={key} value={(key + 1).toString()}>
-                    {value}
-                  </option>
-                );
-              })}
+              {species &&
+                Array.isArray(species) &&
+                species.map((value: string, key: number) => {
+                  return (
+                    <option key={key} value={(key + 1).toString()}>
+                      {value}
+                    </option>
+                  );
+                })}
             </ListOfSpecies>
             <Button
               onClick={() => {
@@ -102,13 +81,15 @@ function HomePage() {
             </Button>
           </>
         ) : (
-          <SpinnerContainer>
-            <ReactBootStrap.Spinner animation="border" />
-          </SpinnerContainer>
+          <div data-testid="loading">
+            <SpinnerContainer>
+              <ReactBootStrap.Spinner animation="border" />
+            </SpinnerContainer>
+          </div>
         )}
       </Content>
     </Container>
   );
-}
+};
 
 export default HomePage;

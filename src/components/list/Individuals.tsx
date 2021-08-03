@@ -40,8 +40,10 @@ function Individuals() {
   return (
     <Container>
       <Header>
-        <BackButton onClick={() => backToMainPage()}>Back to Mainpage</BackButton>
-        <Title>ListPage</Title>
+        <BackButton data-testid="backButton" onClick={() => backToMainPage()}>
+          Back to Mainpage
+        </BackButton>
+        <Title data-testid="componentTitle">ListPage</Title>
       </Header>
       <Content>
         {loaded ? <SpeciesName>{title} individuals!</SpeciesName> : <></>}
