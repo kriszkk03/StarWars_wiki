@@ -29,6 +29,7 @@ function ProfilePage() {
     const data = await ApiInstance.get<SearchResult>(`people/?search=${name}`);
     const urlTypes = ['films', 'species'];
     let result: Person = data.data.results[0];
+
     const filmsPromiseArray: Promise<string>[] = data.data.results[0].films.map(async (filmURL: string) => {
       const film = await ApiInstance.get<FilmType>(filmURL);
       return film.data.title;

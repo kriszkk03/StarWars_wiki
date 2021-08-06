@@ -9,20 +9,20 @@ const searchButtonId = 'searchButton';
 const componentTitleId = 'componentTitle';
 const listOfSpeciesId = 'listOfSpecies';
 const loadId = 'loading';
-/* const errorMsgId = 'errorMsg';
+const errorMsgId = 'errorMsg';
 
 const mockSearch = jest.fn();
 const mockError = jest.fn();
-*/
+
 const mockList = jest.fn();
 const mockLoaded = jest.fn();
 
-/* jest.mock('../useSearch.ts', () => ({
+jest.mock('../useSearch.ts', () => ({
   useSearch: () => ({
     handleSearch: mockSearch,
     error: mockError(),
   }),
-})); */
+}));
 jest.mock('../useList.ts', () => ({
   useList: () => ({
     species: mockList,
@@ -31,10 +31,10 @@ jest.mock('../useList.ts', () => ({
 }));
 describe('homepage component', () => {
   afterEach(cleanup);
-  /*afterAll(() => {
+  afterAll(() => {
     jest.unmock('../useSearch.ts');
     //jest.unmock('../useList');
-  }); */
+  });
   test('should contains necessary fields', () => {
     render(<HomePage />);
     //todo: extended other fields
@@ -47,19 +47,21 @@ describe('homepage component', () => {
   });
   test('on loading', async () => {
     render(<HomePage />);
-    const load = screen.getByTestId(loadId);
-    expect(load).toBeDefined();
+    /*  const load = screen.getByTestId(loadId);
+    expect(load).toBeDefined(); */
+    const list = await screen.findAllByTestId('listOfSpecies');
+    expect(list).not.toHaveLength(0);
     // mockLoaded.mockReturnValueOnce(true);
     // mockList.mockReturnValueOnce(['first', 'second', 'third']);
     // const listOfSpecies = await screen.findByTestId(listOfSpeciesId);
     // expect(listOfSpecies).toBeDefined();
   });
-  /*   test('should handle ERROR on search click', async () => {
+  test('should handle ERROR on search click', async () => {
     mockError.mockReturnValue(true);
     const searchButton = screen.getByTestId(searchButtonId);
     fireEvent.click(searchButton);
     const errorMsg = screen.getByTestId(errorMsgId);
     expect(errorMsg).toBeDefined();
     expect(mockSearch).toBeCalled();
-  }); */
+  });
 });

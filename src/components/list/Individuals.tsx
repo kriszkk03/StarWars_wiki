@@ -5,6 +5,7 @@ import { ApiInstance } from '../../api/api';
 import { Person, Species, URLString } from '../../api/types/types';
 import { Container, Content, Button, SpinnerContainer, Header, Title, SpeciesName, BackButton } from './style';
 import * as ReactBootStrap from 'react-bootstrap';
+import { AxiosResponse } from 'axios';
 
 function Individuals() {
   const { id } = useParams<IDType>();
@@ -17,12 +18,24 @@ function Individuals() {
    * @param id the id of the selected species
    */
   const getPeopleURL = async (id: string) => {
-    const data = await ApiInstance.get<Species>(`/species/${id}`);
-    setTitle(data.data.name);
-    const promiseArray: Promise<string>[] = data.data.people.map(async (person: URLString) => {
-      const tmp = await ApiInstance.get<Person>(person.toString());
-      return tmp.data.name;
-    });
+    let data: AxiosResponse<Species> | null = null;
+    try {
+      data = await ApiInstance.get<Species>(`/species/${id}`);
+    } catch (err) {
+      //console.log(err);
+    }
+
+    setTitle((data as AxiosResponse<Species>).data.name);
+
+    const promiseArray: Promise<string>[] = (data as AxiosResponse<Species>).data.people.map(
+      async (person: URLString) => {
+        //console.error('person', person.toString());
+        const tmp = await ApiInstance.get<Person>(person.toString());
+        return tmp.data.name;
+        //return 'r2-d2';
+      }
+    );
+
     const resultArray = await Promise.all(promiseArray);
     setNames(resultArray);
     setLoaded(true);
@@ -46,18 +59,18 @@ function Individuals() {
         <Title data-testid="componentTitle">ListPage</Title>
       </Header>
       <Content>
-        {loaded ? <SpeciesName>{title} individuals!</SpeciesName> : <></>}
+        {loaded ? <SpeciesName data-testid="speciesTitle">{title} individuals!</SpeciesName> : <></>}
         {loaded ? (
           names.length > 0 &&
           names.map((name: string) => {
             return (
-              <Button key={name} onClick={() => clickName(name)}>
+              <Button data-testid="buttonToProfile" key={name} onClick={() => clickName(name)}>
                 {name}
               </Button>
             );
           })
         ) : (
-          <SpinnerContainer>
+          <SpinnerContainer data-testid="spinner">
             <ReactBootStrap.Spinner animation="border" />
           </SpinnerContainer>
         )}

@@ -81,11 +81,9 @@ const HomePage = () => {
             </Button>
           </>
         ) : (
-          <div data-testid="loading">
-            <SpinnerContainer>
-              <ReactBootStrap.Spinner animation="border" />
-            </SpinnerContainer>
-          </div>
+          <SpinnerContainer data-testid="loading">
+            <ReactBootStrap.Spinner animation="border" />
+          </SpinnerContainer>
         )}
       </Content>
     </Container>

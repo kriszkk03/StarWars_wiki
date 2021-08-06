@@ -1,35 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { NameType } from './types';
 import { Container, Header, Content, BackButton, Title, Button, SpinnerContainer } from './style';
-import { SearchResult } from '../../api/types/searchResult';
-import { ApiInstance } from '../../api/api';
+
 import * as ReactBootStrap from 'react-bootstrap';
+import { useSearchNames } from './useSearchNames';
 
 function Results() {
   const { name } = useParams<NameType>();
   const history = useHistory();
-  const [names, setNames] = useState(['']);
-  const [loaded, setLoaded] = useState(false);
+  const { names, loaded } = useSearchNames({ name });
 
   const backToMainPage = (): void => {
     history.push('/');
   };
-
-  const searchNames = async (name: string) => {
-    const data = await ApiInstance.get<SearchResult>('people/?search=' + name);
-    let resultArray: string[] = [];
-    data.data.results.forEach((person) => {
-      resultArray.push(person.name);
-    });
-    setNames(resultArray);
-    setLoaded(true);
-  };
-
-  useEffect(() => {
-    searchNames(name);
-  }, [name]);
 
   const clickName = (name: string) => {
     history.push(`/profile/${name}`);
